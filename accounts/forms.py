@@ -35,5 +35,5 @@ class UserRegisterForm(forms.Form):
 
 
 class UserLoginForm(forms.Form):
-    user_name = forms.CharField(max_length=50)
-    password = forms.CharField(widget=forms.PasswordInput)
+    user_name = forms.CharField(max_length=50 , widget=forms.TextInput(attrs={'placeholder': 'username or email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'enter password'}))

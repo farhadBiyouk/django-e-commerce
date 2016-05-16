@@ -5,6 +5,7 @@ from accounts.forms import UserRegisterForm, UserLoginForm
 from django.contrib import messages
 
 
+
 def user_register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -34,7 +35,7 @@ def user_login(request):
                 messages.success(request, 'welcome to site')
                 return redirect('home:home')
             else:
-                messages.error(request, 'this operation have problem')
+                messages.error(request, 'username or password wrong')
     else:
         form = UserLoginForm()
     return render(request, 'accounts/login.html', {'form': form})
