@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserRegisterForm, UserLoginForm
 from django.contrib import messages
-
+from accounts.models import Profile
 
 
 def user_register(request):
@@ -45,3 +45,8 @@ def user_logout(request):
     logout(request)
     messages.success(request, 'با موفقیت از سایت خارج شدید')
     return redirect('home:home')
+
+
+def user_profile(request):
+    profile = Profile.objects.get(pk=request.user.id)
+    return render(request, 'accounts/profile.html', {'profile': profile})
