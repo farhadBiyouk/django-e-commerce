@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserRegisterForm, UserLoginForm
+from django.contrib import messages
 
 
 def user_register(request):
@@ -30,7 +31,16 @@ def user_login(request):
             user = authenticate(request, username=data['user_name'], password=data['password'])
             if user is not None:
                 login(request, user)
+                messages.success(request, 'welcome to site')
                 return redirect('home:home')
+            else:
+                messages.error(request, 'this operation have problem')
     else:
         form = UserLoginForm()
     return render(request, 'accounts/login.html', {'form': form})
+
+
+def user_logout(request):
+    logout(request)
+    messages.success(request, 'با موفقیت از سایت خارج شدید')
+    return redirect('home:home')
