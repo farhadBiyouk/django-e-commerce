@@ -1,0 +1,39 @@
+from django import forms
+from django.contrib.auth.models import User
+
+
+class UserRegisterForm(forms.Form):
+    user_name = forms.CharField(max_length=50)
+    email = forms.EmailField()
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
+
+    def clean_user_name(self):
+        username = self.cleaned_data['user_name']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('this username is already exists')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('this username is already exists')
+        return email
+
+    def clean_password2(self):
+        password1 = self.cleaned_data['password1']
+        password2 = self.cleaned_data['password2']
+        if password1 != password2:
+            raise forms.ValidationError('passwords not match')
+        elif len(password1) < 5:
+            raise forms.ValidationError('password was short')
+        elif not any(ch.isupper() for ch in password2):
+            raise forms.ValidationError('password must have is upper case')
+        return password1
+
+
+class UserLoginForm(forms.Form):
+    user_name = forms.CharField(max_length=50)
+    password = forms.CharField(widget=forms.PasswordInput)
