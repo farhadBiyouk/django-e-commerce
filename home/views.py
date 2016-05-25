@@ -3,13 +3,13 @@ from home.models import Category, Product
 
 
 def home(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(is_sub=False)
     return render(request, 'home/home.html', {'categories': categories})
 
 
 def all_product(request, slug=None):
     products = Product.objects.all()
-    category = Category.objects.all()
+    category = Category.objects.filter(is_sub=False)
     if slug:
         data = Category.objects.get(slug=slug)
         products = products.filter(category=data)

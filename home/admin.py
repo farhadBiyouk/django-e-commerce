@@ -13,3 +13,5 @@ class CategoryAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'unit_price', 'amount', 'discount', 'total_price', 'available']
     list_filter = ('available',)
+
+

@@ -4,6 +4,8 @@
 <h1>Home page</h1>
 {% for cat in categories %}
 <a href="{{cat.get_absolute_url}}"><h3>{{cat.name}}</h3></a>
-<img src="{{cat.image.url}}" alt="" style="width: 300px">
+{% for sub_cat in cat.sub.all %}
+<span><a href="{{sub_cat.get_absolute_url}}">{{sub_cat.name}}</a></span>
+{% endfor %}
 {% endfor %}
 {% endblock %}
