@@ -1,11 +1,16 @@
 from django import forms
 from django.contrib.auth.models import User
+from accounts.models import Profile
+
+errors = {
+    'required': 'این فیلد اجباری می باشد'
+}
 
 
 class UserRegisterForm(forms.Form):
     user_name = forms.CharField(max_length=50)
     email = forms.EmailField()
-    first_name = forms.CharField(max_length=50)
+    first_name = forms.CharField(max_length=50, error_messages=errors)
     last_name = forms.CharField(max_length=50)
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -35,5 +40,17 @@ class UserRegisterForm(forms.Form):
 
 
 class UserLoginForm(forms.Form):
-    user_name = forms.CharField(max_length=50 , widget=forms.TextInput(attrs={'placeholder': 'username or email'}))
+    user_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'username or email'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'enter password'}))
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name']
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['phone', 'address']

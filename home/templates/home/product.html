@@ -2,4 +2,14 @@
 {% block title %}Product{% endblock %}
 {% block content %}
 <h1>Product page</h1>
+{% for product in products %}
+<h2>{{product.name}}</h2>
+<a href="{% url 'home:product_detail' product.id %}"><img src="{{product.image.url}}" alt="" srcset="" style="width: 150px"><br></a>
+{% if product.discount %}
+<strike>{{product.unit_price}}</strike>
+<h3>{{product.total_price}}</h3>
+{% else %}
+<h3>{{product.total_price}}</h3>
+{% endif %}
+{% endfor %}
 {% endblock %}

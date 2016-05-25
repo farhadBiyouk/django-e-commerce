@@ -9,7 +9,7 @@
     <tr>
         <th>first_name : {{profile.user.first_name}}</th>
     </tr>
-       <tr>
+    <tr>
         <th>last_name : {{profile.user.last_name}}</th>
     </tr>
     <tr>
@@ -22,4 +22,6 @@
         <th>address: {{profile.address}}</th>
     </tr>
 </table>
+<a href="{% url 'accounts:update_profile' %}">Update profile</a><br><br><br>
+<a href="{% url 'accounts:change_password' %}"> Change password</a><br><br><br>
 {% endblock %}
