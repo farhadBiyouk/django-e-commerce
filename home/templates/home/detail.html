@@ -2,7 +2,24 @@
 {% block title %} Detail {% endblock %}
 {% block content %}
 <h1>{{product.name}}</h1>
-<img src="{{product.image.url}}" alt="{{product.name}}" style="width: 500px"><br>
+<img src="{{product.image.url}}" alt="{{product.name}}" style="width: 200px"><br>
 <p>{{product.information}}</p>
-
+<hr>
+{% if  product.status  == 'Size' %}
+      <form action="" method="post">
+          {% csrf_token %}
+          {% for data in variant %}
+            <input type="radio" name="select" value="{{data.id}}" {% if variants.id == data.id %} checked {% endif %} onchange="this.form.submit()">
+          <a href="" style="text-decoration: none" >{{data.size_variant}}</a>
+    {% endfor %}
+  </form>
+{% elif product.status == 'Color' %}
+<form action="" method="post">
+          {% csrf_token %}
+          {% for data in variant %}
+            <input type="radio" name="select" value="{{data.id}}" {% if variants.id == data.id %} checked {% endif %} onchange="this.form.submit()">
+          <a href="" style="text-decoration: none" >{{data.color_variant}}</a>
+    {% endfor %}
+  </form>
+{% endif %}
 {% endblock %}

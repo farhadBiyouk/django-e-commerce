@@ -1,12 +1,18 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'pro/bootstrap.min.css' %}">
 </head>
 <body>
+{% include 'navbar.html' %}
 {% include 'message.html' %}
-{% block content %}
-{% endblock %}
+<div class="container-fluid">
+    {% block content %}
+    {% endblock %}
+</div>
+
 </body>
 </html>

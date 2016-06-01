@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -19,6 +20,12 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    VARIANT = (
+        ('None', 'none'),
+        ('Size', 'size'),
+        ('Color', 'color'),
+    )
+
     category = models.ManyToManyField(Category, blank=True)
     name = models.CharField(max_length=200)
     amount = models.PositiveIntegerField()
@@ -29,6 +36,7 @@ class Product(models.Model):
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
     available = models.BooleanField(default=True, null=True, blank=True)
+    status = models.CharField(max_length=10, null=True, blank=True, choices=VARIANT)
     image = models.FileField(upload_to='product/%Y/%m/&d')
 
     def __str__(self):
@@ -44,3 +52,38 @@ class Product(models.Model):
         return self.total_price
 
 
+class Size(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Color(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Variant(models.Model):
+    name = models.CharField(max_length=200)
+    product_variant = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    size_variant = models.ForeignKey(Size, on_delete=models.CASCADE, null=True, blank=True)
+    color_variant = models.ForeignKey(Color, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.PositiveIntegerField()
+    unit_price = models.PositiveIntegerField()
+    discount = models.PositiveIntegerField(blank=True, null=True)
+    total_price = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def total_price(self):
+        if not self.discount:
+            return self.unit_price
+        elif self.discount:
+            total = (self.discount * self.unit_price) / 100
+            return int(self.unit_price - total)
+        return self.total_price

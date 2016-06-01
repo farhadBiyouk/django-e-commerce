@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from home.models import Category, Product
+from home.models import Category, Product, Variant
 
 
 def home(request):
@@ -18,4 +18,13 @@ def all_product(request, slug=None):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'home/detail.html', {'product': product})
+    if product.status is not None:
+        if request.method == 'POST':
+            variant = Variant.objects.filter(product_variant_id=product_id)
+            variants = Variant.objects.get(id=request.POST.get('select'))
+        else:
+            variant = Variant.objects.filter(product_variant_id=product_id)
+            variants = Variant.objects.get(id=variant[0].id)
+        return render(request, 'home/detail.html', {'product': product, 'variant': variant, 'variants': variants})
+    else:
+        return render(request, 'home/detail.html', {'product': product})
