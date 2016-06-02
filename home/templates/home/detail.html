@@ -4,22 +4,35 @@
 <h1>{{product.name}}</h1>
 <img src="{{product.image.url}}" alt="{{product.name}}" style="width: 200px"><br>
 <p>{{product.information}}</p>
+<h4>Product like</h4>
+<p>like: {{product.total_like}}</p>
+{% if is_like %}
+<a href="{% url 'home:product_like' product.id %}" style="text-decoration: none" class="btn btn-danger text-white">Unlike</a>
+{% else %}
+<a href="{% url 'home:product_like' product.id %}" style="text-decoration: none"
+   class="btn btn-info text-white">like</a>
+{% endif %}
+
+<p>Unlike: {{product.total_unlike}}</p>
+<a href="{% url 'home:product_unlike' product.id %}" style="text-decoration: none" class="btn btn-danger text-white">Dislike</a>
 <hr>
 {% if  product.status  == 'Size' %}
-      <form action="" method="post">
-          {% csrf_token %}
-          {% for data in variant %}
-            <input type="radio" name="select" value="{{data.id}}" {% if variants.id == data.id %} checked {% endif %} onchange="this.form.submit()">
-          <a href="" style="text-decoration: none" >{{data.size_variant}}</a>
+<form action="" method="post">
+    {% csrf_token %}
+    {% for data in variant %}
+    <input type="radio" name="select" value="{{data.id}}" {% if variants.id == data.id %} checked {% endif %}
+           onchange="this.form.submit()">
+    <a href="" style="text-decoration: none">{{data.size_variant}}</a>
     {% endfor %}
-  </form>
+</form>
 {% elif product.status == 'Color' %}
 <form action="" method="post">
-          {% csrf_token %}
-          {% for data in variant %}
-            <input type="radio" name="select" value="{{data.id}}" {% if variants.id == data.id %} checked {% endif %} onchange="this.form.submit()">
-          <a href="" style="text-decoration: none" >{{data.color_variant}}</a>
+    {% csrf_token %}
+    {% for data in variant %}
+    <input type="radio" name="select" value="{{data.id}}" {% if variants.id == data.id %} checked {% endif %}
+           onchange="this.form.submit()">
+    <a href="" style="text-decoration: none">{{data.color_variant}}</a>
     {% endfor %}
-  </form>
+</form>
 {% endif %}
 {% endblock %}

@@ -38,6 +38,10 @@ class Product(models.Model):
     available = models.BooleanField(default=True, null=True, blank=True)
     status = models.CharField(max_length=10, null=True, blank=True, choices=VARIANT)
     image = models.FileField(upload_to='product/%Y/%m/&d')
+    like = models.ManyToManyField(User, blank=True, related_name='product_like')
+    total_like = models.PositiveIntegerField(default=0)
+    unlike = models.ManyToManyField(User, blank=True, related_name='product_unlike')
+    total_unlike = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -50,6 +54,12 @@ class Product(models.Model):
             total = (self.discount * self.unit_price) / 100
             return int(self.unit_price - total)
         return self.total_price
+
+    def total_like(self):
+        return self.like.count()
+
+    def total_unlike(self):
+        return self.unlike.count()
 
 
 class Size(models.Model):
