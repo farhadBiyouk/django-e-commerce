@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'accounts.apps.AccountsConfig',
 
+    # third-party-package
+    'taggit',
+
 ]
 
 MIDDLEWARE = [

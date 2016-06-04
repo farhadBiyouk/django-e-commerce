@@ -2,9 +2,22 @@
 {% block title %} Detail {% endblock %}
 {% block content %}
 <h1>{{product.name}}</h1>
-<img src="{{product.image.url}}" alt="{{product.name}}" style="width: 200px"><br>
+<div class="row">
+    <div class="col-10">
+            <img src="{{product.image.url}}" alt="{{product.name}}" style="width: 200px"><br>
 <p>{{product.information}}</p>
-<h4>Product like</h4>
+          <h2>Image gallery</h2>
+    <div class="row">
+    <div class="col-8">
+        {% for imag in image_gallery %}
+        <img src="{{imag.image.url}}" alt="" width="150" height="150" class="p-4 mr-2">
+        {% endfor %}
+    </div>
+</div>
+    </div>
+
+<div class="col-2">
+    <h4>Product like</h4>
 <p>like: {{product.total_like}}</p>
 {% if is_like %}
 <a href="{% url 'home:product_like' product.id %}" style="text-decoration: none" class="btn btn-danger text-white">Unlike</a>
@@ -15,6 +28,10 @@
 
 <p>Unlike: {{product.total_unlike}}</p>
 <a href="{% url 'home:product_unlike' product.id %}" style="text-decoration: none" class="btn btn-danger text-white">Dislike</a>
+</div>
+
+</div>
+
 <hr>
 {% if  product.status  == 'Size' %}
 <form action="" method="post">
@@ -35,4 +52,53 @@
     {% endfor %}
 </form>
 {% endif %}
+<hr>
+<h3>Comment</h3>
+<div class="row p-4">
+    <div class="col-4 bg-dark p-2">
+        <form action="{% url 'home:product_comment' product.id %}" method="post">
+            {% csrf_token %}
+            <textarea name="comment" cols="30" rows="10" class="form-control"></textarea><br>
+            <input type="number" name="rate" class="form-control">
+            <br>
+            <button type="submit" class="btn btn-outline-success">Send comment</button>
+        </form>
+
+    </div>
+</div>
+<div class="row p-4">
+    <div class="col-4 bg-dark p-2">
+        {% for com in comments %}
+        <div class="card bg-danger text-white">
+            <h5>{{com.user.first_name}} - {{com.user.last_name}}</h5>
+            <p>{{com.comment}}</p>
+            <small>{{com.rate}}</small>
+        </div>
+        <br>
+        <div class="row p-4">
+            <div class="col-12 bg-dark p-2">
+                <form action="{% url 'home:product_rely_comment' product.id com.id %}" method="post">
+                    {% csrf_token %}
+                    <textarea name="comment" cols="30" rows="10" class="form-control"></textarea><br>
+                    <br>
+                    <button type="submit" class="btn btn-outline-success">Send Reply</button>
+                </form>
+                {% for data in com.reply_comment.all %}
+                <div class="card bg-primary text-white">
+                    <h5>{{data.user.first_name}} - {{com.user.last_name}}</h5>
+                    <p>{{data.comment}}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+    </div>
+</div>
+<hr>
+<h2>Similar product</h2>
+{% for tag in similar_product %}
+<a href="{% url  'home:product_detail' tag.id %}"><img src="{{tag.image.url}}" alt="" width="150" height="150" class="p-4 mr-2"></a>
+{% endfor %}
+
 {% endblock %}

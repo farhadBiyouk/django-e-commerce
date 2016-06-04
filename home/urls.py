@@ -5,6 +5,8 @@ from home.views import (
     product_detail,
     product_like,
     product_unlike,
+    product_comment,
+    product_rely_comment,
 )
 
 app_name = 'home'
@@ -15,4 +17,6 @@ urlpatterns = [
     path('category/<slug>/', all_product, name='category'),
     path('like/<int:id>/', product_like, name='product_like'),
     path('unlike/<int:id>/', product_unlike, name='product_unlike'),
+    path('comment/<int:id>/', product_comment, name='product_comment'),
+    path('reply/<int:id>/<int:comment_id>/', product_rely_comment, name='product_rely_comment'),
 ]

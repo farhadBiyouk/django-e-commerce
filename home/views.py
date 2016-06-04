@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from home.models import Category, Product, Variant
+from home.models import Category, Product, Variant, Comment, ImageProductGallery
 from django.contrib import messages
+from home.forms import CommentProductForm, ReplyCommentProductForm
 
 
 def home(request):
@@ -19,6 +20,11 @@ def all_product(request, slug=None):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+    comment_form = CommentProductForm()
+    reply_comment = ReplyCommentProductForm()
+    comments = Comment.objects.filter(product_id=product_id, is_reply=False)
+    similar_product = product.tags.similar_objects()[:2]
+    image_gallery = ImageProductGallery.objects.filter(product_id=product_id)
     is_like = False
     if product.like.filter(id=request.user.id).exists():
         is_like = True
@@ -30,9 +36,14 @@ def product_detail(request, product_id):
             variant = Variant.objects.filter(product_variant_id=product_id)
             variants = Variant.objects.get(id=variant[0].id)
         return render(request, 'home/detail.html',
-                      {'product': product, 'variant': variant, 'variants': variants, 'is_like': is_like})
+                      {'product': product, 'variant': variant, 'variants': variants, 'is_like': is_like,
+                       'comments': comments, 'comment_form': comment_form, 'reply_comment': reply_comment,
+                       'similar_product': similar_product, 'image_gallery': image_gallery})
     else:
-        return render(request, 'home/detail.html', {'product': product, 'is_like': is_like})
+        return render(request, 'home/detail.html',
+                      {'product': product, 'is_like': is_like, 'comment_form': comment_form, 'comments': comments,
+                       'reply_comment': reply_comment, 'similar_product': similar_product,
+                       'image_gallery': image_gallery})
 
 
 def product_like(request, id):
@@ -56,3 +67,37 @@ def product_unlike(request, id):
     product.unlike.add(request.user)
     print(url)
     return redirect(url)
+
+
+def product_comment(request, id):
+    url = request.META.get('HTTP_REFERER')
+    if request.method == 'POST':
+        form = CommentProductForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            Comment.objects.create(
+                comment=data['comment'],
+                product_id=id,
+                user_id=request.user.id,
+                rate=data['rate']
+            )
+            messages.success(request, 'added your comment for this product, tanks')
+            print('add')
+        return redirect(url)
+
+
+def product_rely_comment(request, id, comment_id):
+    url = request.META.get('HTTP_REFERER')
+    if request.method == 'POST':
+        form = ReplyCommentProductForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            Comment.objects.create(
+                comment=data['comment'],
+                product_id=id,
+                user_id=request.user.id,
+                reply_id=comment_id,
+                is_reply=True
+            )
+            messages.success(request, 'added successfully  reply comment, tank you')
+        return redirect(url)
