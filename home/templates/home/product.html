@@ -2,9 +2,16 @@
 {% block title %}Product{% endblock %}
 {% block content %}
 <h1>Product page</h1>
+<form action="{% url 'home:search_product' %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="search" class="form-control" placeholder="search....">
+    <button type="submit" class=" btn btn-primary text-white w-25 m-2 p-1 align-center">Search</button>
+</form>
+<br>
 {% for product in products %}
 <h2>{{product.name}}</h2>
-<a href="{% url 'home:product_detail' product.id %}"><img src="{{product.image.url}}" alt="" srcset="" style="width: 150px"><br></a>
+<a href="{% url 'home:product_detail' product.id %}"><img src="{{product.image.url}}" alt="" srcset=""
+                                                          style="width: 150px"><br></a>
 {% if product.discount %}
 <strike>{{product.unit_price}}</strike>
 <h3>{{product.total_price}}</h3>

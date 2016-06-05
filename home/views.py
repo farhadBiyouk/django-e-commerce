@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from home.models import Category, Product, Variant, Comment, ImageProductGallery
 from django.contrib import messages
-from home.forms import CommentProductForm, ReplyCommentProductForm
+from home.forms import CommentProductForm, ReplyCommentProductForm, SearchForm
+from django.db.models import Q
 
 
 def home(request):
@@ -76,13 +77,12 @@ def product_comment(request, id):
         if form.is_valid():
             data = form.cleaned_data
             Comment.objects.create(
-                comment=data['comment'],
-                product_id=id,
                 user_id=request.user.id,
+                product_id=id,
+                comment=data['comment'],
                 rate=data['rate']
             )
-            messages.success(request, 'added your comment for this product, tanks')
-            print('add')
+            messages.success(request, 'added new comment')
         return redirect(url)
 
 
@@ -101,3 +101,22 @@ def product_rely_comment(request, id, comment_id):
             )
             messages.success(request, 'added successfully  reply comment, tank you')
         return redirect(url)
+
+
+def search_product(request):
+    product = Product.objects.all()
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data['search']
+            if data is not None:
+                if data.isdigit():
+                    product = product.filter(
+                        Q(discount__exact=data)|
+                        Q(unit_price__exact=data)
+                    )
+                else:
+                    product = product.filter(
+                        Q(name__icontains=data)
+                    )
+    return render(request, 'home/product.html', {'products': product})

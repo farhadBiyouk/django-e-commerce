@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from taggit.managers import TaggableManager
+from django.db.models import Avg
 
 
 class Category(models.Model):
@@ -19,6 +20,19 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('home:category', args=[self.slug])
+
+
+class Comment(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='comment_product')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.TextField()
+    rate = models.PositiveIntegerField(default=1)
+    created = models.DateTimeField(auto_now_add=True)
+    reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='reply_comment', null=True, blank=True)
+    is_reply = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.product.name
 
 
 class Product(models.Model):
@@ -67,6 +81,13 @@ class Product(models.Model):
     def show_image(self):
         return format_html(f'<img src="{self.image.url}" width="150px" height="75">')
 
+    def average(self):
+        data = Comment.objects.filter(is_reply=False, product=self).aggregate(avg=Avg('rate'))
+        star = 0
+        if data['avg'] is not None:
+            star = round(data['avg'], 1)
+        return star
+
 
 class Size(models.Model):
     name = models.CharField(max_length=100)
@@ -103,19 +124,6 @@ class Variant(models.Model):
             total = (self.discount * self.unit_price) / 100
             return int(self.unit_price - total)
         return self.total_price
-
-
-class Comment(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comment_product')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField()
-    rate = models.PositiveIntegerField(default=1)
-    created = models.DateTimeField(auto_now_add=True)
-    reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='reply_comment', null=True, blank=True)
-    is_reply = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.product.name
 
 
 class ImageProductGallery(models.Model):

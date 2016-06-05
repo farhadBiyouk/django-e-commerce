@@ -2,6 +2,7 @@
 {% block title %} Detail {% endblock %}
 {% block content %}
 <h1>{{product.name}}</h1>
+<h2>reta:  {{product.average}}</h2>
 <div class="row">
     <div class="col-10">
             <img src="{{product.image.url}}" alt="{{product.name}}" style="width: 200px"><br>
@@ -58,8 +59,8 @@
     <div class="col-4 bg-dark p-2">
         <form action="{% url 'home:product_comment' product.id %}" method="post">
             {% csrf_token %}
-            <textarea name="comment" cols="30" rows="10" class="form-control"></textarea><br>
-            <input type="number" name="rate" class="form-control">
+            <textarea name="comment" cols="30" rows="10" class="form-control" required></textarea><br>
+            <input type="number" name="rate" class="form-control" required>
             <br>
             <button type="submit" class="btn btn-outline-success">Send comment</button>
         </form>
