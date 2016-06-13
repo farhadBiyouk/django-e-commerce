@@ -54,6 +54,25 @@
 </form>
 {% endif %}
 <hr>
+<div class="card bg-primary col-4">
+    your choices price is : {{variants.total_price}}
+</div>
+<br>
+{% if product.status != "None" %}
+    <form action="{% url 'cart:add_cart' product.id %}" method="post">
+    {% csrf_token %}
+        <input type="hidden" name="select" value="{{variants.id}}">
+    <input type="number" name="quantity" min="1" value="1" max="{{product.amount}}">
+    <button type="submit">Add</button>
+</form>
+{% else %}
+<form action="{% url 'cart:add_cart' product.id %}" method="post">
+    {% csrf_token %}
+    <input type="number" name="quantity" min="1" value="1" max="{{product.amount}}">
+    <button type="submit">Add</button>
+</form>
+{% endif %}
+<br>
 <h3>Comment</h3>
 <div class="row p-4">
     <div class="col-4 bg-dark p-2">

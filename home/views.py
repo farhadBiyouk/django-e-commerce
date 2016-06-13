@@ -3,6 +3,7 @@ from home.models import Category, Product, Variant, Comment, ImageProductGallery
 from django.contrib import messages
 from home.forms import CommentProductForm, ReplyCommentProductForm, SearchForm
 from django.db.models import Q
+from cart.forms import CartForm
 
 
 def home(request):
@@ -26,10 +27,11 @@ def product_detail(request, product_id):
     comments = Comment.objects.filter(product_id=product_id, is_reply=False)
     similar_product = product.tags.similar_objects()[:2]
     image_gallery = ImageProductGallery.objects.filter(product_id=product_id)
+    cart_form = CartForm()
     is_like = False
     if product.like.filter(id=request.user.id).exists():
         is_like = True
-    if product.status is not None:
+    if product.status != 'None':
         if request.method == 'POST':
             variant = Variant.objects.filter(product_variant_id=product_id)
             variants = Variant.objects.get(id=request.POST.get('select'))
@@ -39,12 +41,12 @@ def product_detail(request, product_id):
         return render(request, 'home/detail.html',
                       {'product': product, 'variant': variant, 'variants': variants, 'is_like': is_like,
                        'comments': comments, 'comment_form': comment_form, 'reply_comment': reply_comment,
-                       'similar_product': similar_product, 'image_gallery': image_gallery})
+                       'similar_product': similar_product, 'image_gallery': image_gallery, 'cart_form': cart_form})
     else:
         return render(request, 'home/detail.html',
                       {'product': product, 'is_like': is_like, 'comment_form': comment_form, 'comments': comments,
                        'reply_comment': reply_comment, 'similar_product': similar_product,
-                       'image_gallery': image_gallery})
+                       'image_gallery': image_gallery, 'cart_form': cart_form})
 
 
 def product_like(request, id):
@@ -112,7 +114,7 @@ def search_product(request):
             if data is not None:
                 if data.isdigit():
                     product = product.filter(
-                        Q(discount__exact=data)|
+                        Q(discount__exact=data) |
                         Q(unit_price__exact=data)
                     )
                 else:
