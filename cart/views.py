@@ -3,17 +3,19 @@ from cart.forms import CartForm
 from .models import Cart
 from home.models import Product
 from django.contrib import messages
+from order.forms import OrderForm
 
 
 def detail(request):
     cart = Cart.objects.filter(user_id=request.user.id)
+    order_form = OrderForm()
     total = 0
     for p in cart:
         if p.product.status != 'None':
             total += p.variant.total_price * p.quantity
         else:
             total += p.product.total_price * p.quantity
-    return render(request, 'cart/detail.html', {'cart': cart, 'total':total})
+    return render(request, 'cart/detail.html', {'cart': cart, 'total': total, 'order_form': order_form})
 
 
 def add_cart(request, id):

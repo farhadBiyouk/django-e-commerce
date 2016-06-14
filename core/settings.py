@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'accounts.apps.AccountsConfig',
     'cart.apps.CartConfig',
+    'order.apps.OrderConfig',
     # third-party-package
     'taggit',
 

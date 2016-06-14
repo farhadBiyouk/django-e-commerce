@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Cart{% endblock %}
 {% block  content %}
-    <h1>Cart</h1>
+<h1>Cart</h1>
 <div class="container">
     <table class="table table-striped table-dark">
         <thead>
@@ -34,10 +34,10 @@
                 </td>
                 <td>{{c.quantity}}</td>
                 <td>
-                     {% if c.product.status != 'None' %}
-                        {% widthratio c.variant.total_price 1 c.quantity %}
+                    {% if c.product.status != 'None' %}
+                    {% widthratio c.variant.total_price 1 c.quantity %}
                     {% else %}
-                        {% widthratio c.product.total_price 1 c.quantity %}
+                    {% widthratio c.product.total_price 1 c.quantity %}
                     {% endif %}
                 </td>
                 <td><a href="{% url 'cart:remove_cart' c.id %}" style="text-decoration: ">remove</a></td>
@@ -49,5 +49,21 @@
             </tr>
         </tbod>
     </table>
+
+
+</div>
+<div class="row">
+    <form action="{% url 'order:create_order' %}" method="post">
+        {% csrf_token %}
+        <input type="email" name="email" class="form-control" style="border-color: black; margin: 10px"
+               placeholder="email...">
+        <input type="text" name="first_name" class="form-control" style="border-color: black; margin: 10px"
+               placeholder="firstname...">
+        <input type="text" name="last_name" class="form-control" style="border-color: black; margin: 10px"
+               placeholder="lastname...">
+        <textarea name="" id="address" cols="30" rows="10" class="form-control"
+                  style="border-color: black; margin: 10px" placeholder="address..."></textarea>
+        <button type="submit" class="btn btn-outline-danger" style=" margin: 10px">Order</button>
+    </form>
 </div>
 {% endblock %}
