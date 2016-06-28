@@ -15,9 +15,13 @@ class Order(models.Model):
     def __str__(self):
         return self.user.username
 
+    def get_price(self):
+        total = sum(i.price() for i in self.order_item.all())
+        return total
+
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_item')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE, null=True, blank=True)
@@ -28,3 +32,9 @@ class OrderItem(models.Model):
 
     def size(self):
         return self.variant.size_variant.name
+
+    def price(self):
+        if self.product.status != 'None':
+            return self.variant.total_price * self.quantity
+        else:
+            return self.product.total_price * self.quantity

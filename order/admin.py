@@ -4,13 +4,13 @@ from order.models import Order, OrderItem
 
 class OrderItemAdmin(admin.TabularInline):
     model = OrderItem
-    readonly_fields = ['user', 'product', 'variant', 'size', 'order', 'quantity']
+    readonly_fields = ['user', 'product', 'variant', 'size', 'order', 'quantity', 'price']
     extra = 1
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'email', 'first_name', 'last_name', 'create', 'paid']
+    list_display = ['user', 'email', 'first_name', 'last_name', 'create', 'paid', 'get_price']
     inlines = [OrderItemAdmin]
 
 
