@@ -11,6 +11,7 @@ from django.contrib import messages
 from accounts.models import Profile
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from django.core.mail import EmailMessage
 
 
 def user_register(request):
@@ -18,13 +19,22 @@ def user_register(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            User.objects.create_user(username=data['user_name'],
-                                     password=data['password1'],
-                                     first_name=data['first_name'],
-                                     last_name=data['last_name'],
-                                     email=data['email']
+            user = User.objects.create_user(username=data['user_name'],
+                                            password=data['password1'],
+                                            first_name=data['first_name'],
+                                            last_name=data['last_name'],
+                                            email=data['email']
 
-                                     )
+                                            )
+            user.is_active = False
+            user.save()
+            mail = EmailMessage(
+                'active user',
+                'hi new user',
+                'test@gmail.com',
+                [data['email']]
+            )
+            mail.send(fail_silently=True)
             return redirect('home:home')
     else:
         form = UserRegisterForm()
@@ -62,7 +72,7 @@ def user_profile(request):
 def update_profile(request):
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST,  instance=request.user.profile)
+        profile_form = ProfileUpdateForm(request.POST, instance=request.user.profile)
         if user_form and profile_form.is_valid():
             user_form.save()
             profile_form.save()
