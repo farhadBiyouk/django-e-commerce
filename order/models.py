@@ -11,12 +11,16 @@ class Order(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     address = models.TextField(blank=True)
+    discount = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.user.username
 
     def get_price(self):
         total = sum(i.price() for i in self.order_item.all())
+        if self.discount:
+            discount_price = (self.discount / 100) * total
+            return int(total - discount_price)
         return total
 
 
@@ -38,3 +42,14 @@ class OrderItem(models.Model):
             return self.variant.total_price * self.quantity
         else:
             return self.product.total_price * self.quantity
+
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    active = models.BooleanField(default=False)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    discount = models.IntegerField()
+
+    def __str__(self):
+        return self.code
