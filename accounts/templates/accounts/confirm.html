@@ -1,0 +1,15 @@
+{% extends  'base.html' %}
+{% block title %}Reset{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1>reset password</h1>
+    {% if validlink %}
+    <form action="" method="post">
+
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">change password</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

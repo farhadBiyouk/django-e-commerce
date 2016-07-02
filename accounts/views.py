@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
+from wheel.util import text_type
+
 from accounts.forms import (
     UserRegisterForm,
     UserLoginForm,
@@ -12,6 +15,21 @@ from accounts.models import Profile
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import EmailMessage
+from django.views import View
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_str, force_bytes
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth import views as auth_view
+from django.urls import reverse_lazy
+
+
+class EmailToken(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (text_type(user.is_active) + text_type(user.id) + text_type(timestamp))
+
+
+email_register = EmailToken()
 
 
 def user_register(request):
@@ -28,9 +46,13 @@ def user_register(request):
                                             )
             user.is_active = False
             user.save()
+            domain = get_current_site(request).domain
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            url = reverse('accounts:active', kwargs={'uidb64': uidb64, 'token': email_register.make_token(user)})
+            linke = 'http://' + domain + url
             mail = EmailMessage(
                 'active user',
-                'hi new user',
+                linke,
                 'test@gmail.com',
                 [data['email']]
             )
@@ -101,3 +123,32 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'accounts/change.html', {'form': form})
+
+
+class EmailRegister(View):
+    def get(self, request, uidb64, token):
+        id = force_str((urlsafe_base64_decode(uidb64)))
+        user = User.objects.get(id=id)
+        if user and email_register.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return redirect('accounts:user_login')
+
+
+class ResetPassword(auth_view.PasswordResetView):
+    template_name = 'accounts/reset.html'
+    success_url = reverse_lazy('accounts:reset_done')
+    email_template_name = 'accounts/link.html'
+
+
+class ResetPasswordDone(auth_view.PasswordResetDoneView):
+    template_name = 'accounts/done.html'
+
+
+class ConfirmPassword(auth_view.PasswordResetConfirmView):
+    template_name = 'accounts/confirm.html'
+    success_url = reverse_lazy('accounts:password_reset_complete')
+
+
+class Complete(auth_view.PasswordResetCompleteView):
+    template_name = 'accounts/complete.html'
