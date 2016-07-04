@@ -22,6 +22,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth import views as auth_view
 from django.urls import reverse_lazy
+from home.models import Product
+from order.models import OrderItem
 
 
 class EmailToken(PasswordResetTokenGenerator):
@@ -94,7 +96,7 @@ def user_profile(request):
 def update_profile(request):
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, instance=request.user.profile)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         if user_form and profile_form.is_valid():
             user_form.save()
             profile_form.save()
@@ -123,6 +125,16 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'accounts/change.html', {'form': form})
+
+
+def favourites(request):
+    product = request.user.fa_user.all()
+    return render(request, 'accounts/favourite.html', {'product': product})
+
+
+def history(request):
+    data = OrderItem.objects.filter(user_id=request.user.id)
+    return render(request, 'accounts/history.html', {'data': data})
 
 
 class EmailRegister(View):

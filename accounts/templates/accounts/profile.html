@@ -2,26 +2,41 @@
 {% block title %}Profile{% endblock %}
 {% block content %}
 <h1>Profile</h1>
-<table>
-    <tr>
-        <th>user: {{profile.user.username}}</th>
-    </tr>
-    <tr>
-        <th>first_name : {{profile.user.first_name}}</th>
-    </tr>
-    <tr>
-        <th>last_name : {{profile.user.last_name}}</th>
-    </tr>
-    <tr>
-        <th>email : {{profile.user.email}}</th>
-    </tr>
-    <tr>
-        <th>phone: {{profile.phone}}</th>
-    </tr>
-    <tr>
-        <th>address: {{profile.address}}</th>
-    </tr>
-</table>
-<a href="{% url 'accounts:update_profile' %}">Update profile</a><br><br><br>
-<a href="{% url 'accounts:change_password' %}"> Change password</a><br><br><br>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-6">
+                    <table>
+                <tr>
+                    <th>user: {{profile.user.username}}</th>
+                </tr>
+                <tr>
+                    <th>first_name : {{profile.user.first_name}}</th>
+                </tr>
+                <tr>
+                    <th>last_name : {{profile.user.last_name}}</th>
+                </tr>
+                <tr>
+                    <th>email : {{profile.user.email}}</th>
+                </tr>
+                <tr>
+                    <th>phone: {{profile.phone}}</th>
+                </tr>
+                <tr>
+                    <th>address: {{profile.address}}</th>
+                </tr>
+            </table>
+        </div>
+        <div class="col-6">
+        {% if profile.profile_image == Null%}
+        <p>Do not have any image</p>
+        {% else %}
+        <img src="{{profile.profile_image.url}}" alt="{{profile.user.username}}" width="300" height="200">
+        {% endif %}
+    </div>
+    </div>
+    <a href="{% url 'accounts:update_profile' %}">Update profile</a><br><br><br>
+<a href="{% url 'accounts:change_password' %}"> Change password</a><br><br><br></div>
+</div>
+
+
 {% endblock %}

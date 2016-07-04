@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %} Favourite{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="card mt-3 p-5">
+        {% for i in product %}
+        <a href="{% url 'home:product_detail' i.id %}"><img src="{{i.image.url}}" alt="" width="300" height="200"></a>
+        <p>{{i.name}}</p>
+
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

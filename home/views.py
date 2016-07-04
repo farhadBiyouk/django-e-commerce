@@ -31,6 +31,9 @@ def product_detail(request, product_id):
     is_like = False
     if product.like.filter(id=request.user.id).exists():
         is_like = True
+    is_fav = False
+    if product.favourite.filter(id=request.user.id).exists():
+        is_fav = True
     if product.status != 'None':
         if request.method == 'POST':
             variant = Variant.objects.filter(product_variant_id=product_id)
@@ -40,11 +43,13 @@ def product_detail(request, product_id):
             variants = Variant.objects.get(id=variant[0].id)
         return render(request, 'home/detail.html',
                       {'product': product, 'variant': variant, 'variants': variants, 'is_like': is_like,
+                       'is_fav': is_fav,
                        'comments': comments, 'comment_form': comment_form, 'reply_comment': reply_comment,
                        'similar_product': similar_product, 'image_gallery': image_gallery, 'cart_form': cart_form})
     else:
         return render(request, 'home/detail.html',
-                      {'product': product, 'is_like': is_like, 'comment_form': comment_form, 'comments': comments,
+                      {'product': product, 'is_like': is_like, 'is_fav': is_fav, 'comment_form': comment_form,
+                       'comments': comments,
                        'reply_comment': reply_comment, 'similar_product': similar_product,
                        'image_gallery': image_gallery, 'cart_form': cart_form})
 
@@ -122,3 +127,17 @@ def search_product(request):
                         Q(name__icontains=data)
                     )
     return render(request, 'home/product.html', {'products': product})
+
+
+def favourite_product(request, id):
+    url = request.META.get('HTTP_REFERER')
+    product = Product.objects.get(id=id)
+    is_fav = False
+    if product.favourite.filter(id=request.user.id).exists():
+        product.favourite.remove(request.user)
+        is_fav = False
+    else:
+        product.favourite.add(request.user)
+        is_fav = True
+    messages.success(request, 'added this product to your favourite list')
+    return redirect(url)

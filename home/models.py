@@ -59,6 +59,7 @@ class Product(models.Model):
     total_like = models.PositiveIntegerField(default=0)
     unlike = models.ManyToManyField(User, blank=True, related_name='product_unlike')
     total_unlike = models.PositiveIntegerField(default=0)
+    favourite = models.ManyToManyField(User, blank=True, related_name='fa_user')
 
     def __str__(self):
         return self.name
