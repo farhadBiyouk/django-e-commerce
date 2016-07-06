@@ -9,6 +9,7 @@ from home.views import (
     product_rely_comment,
     search_product,
     favourite_product,
+    contact,
 )
 
 app_name = 'home'
@@ -23,4 +24,5 @@ urlpatterns = [
     path('reply/<int:id>/<int:comment_id>/', product_rely_comment, name='product_rely_comment'),
     path('search/', search_product, name='search_product'),
     path('favourite/<int:id>', favourite_product, name='favourite_product'),
+    path('contact/', contact, name='contact'),
 ]

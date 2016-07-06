@@ -4,6 +4,7 @@ from django.contrib import messages
 from home.forms import CommentProductForm, ReplyCommentProductForm, SearchForm
 from django.db.models import Q
 from cart.forms import CartForm
+from django.core.mail import EmailMessage
 
 
 def home(request):
@@ -136,8 +137,26 @@ def favourite_product(request, id):
     if product.favourite.filter(id=request.user.id).exists():
         product.favourite.remove(request.user)
         is_fav = False
+        messages.error(request, 'deleted this product to your favourite list', 'danger')
     else:
         product.favourite.add(request.user)
         is_fav = True
-    messages.success(request, 'added this product to your favourite list')
+        messages.success(request, 'added this product to your favourite list')
     return redirect(url)
+
+
+def contact(request):
+    if request.method == 'POST':
+        subject = request.POST['subject']
+        email = request.POST['email']
+        message = request.POST['message']
+        body = subject + '\n' + email + '\n' + message
+        form = EmailMessage(
+            'Contact form',
+            body,
+            'test',
+            ['beshkhom@gmail.com']
+        )
+        form.send(fail_silently=False)
+        messages.success(request, 'sent email successfully')
+    return render(request, 'home/contact.html')
