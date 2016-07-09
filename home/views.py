@@ -5,6 +5,7 @@ from home.forms import CommentProductForm, ReplyCommentProductForm, SearchForm
 from django.db.models import Q
 from cart.forms import CartForm
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def home(request):
@@ -14,11 +15,27 @@ def home(request):
 
 def all_product(request, slug=None):
     products = Product.objects.all()
+    pagination = Paginator(products, 1)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = pagination.get_page(page_number)
+    except EmptyPage:
+        page_obj = pagination.get_page(page_number.num_pages)
+    except PageNotAnInteger:
+        page_obj = pagination.get_page(1)
     category = Category.objects.filter(is_sub=False)
     if slug:
         data = Category.objects.get(slug=slug)
         products = products.filter(category=data)
-    return render(request, 'home/product.html', {'products': products, 'category': category})
+        pagination = Paginator(products, 1)
+        page_number = request.GET.get('page')
+        try:
+            page_obj = pagination.get_page(page_number)
+        except EmptyPage:
+            page_obj = pagination.get_page(page_number.num_pages)
+        except PageNotAnInteger:
+            page_obj = pagination.get_page(1)
+    return render(request, 'home/product.html', {'products': page_obj, 'category': category})
 
 
 def product_detail(request, product_id):
