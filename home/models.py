@@ -53,6 +53,9 @@ class Product(models.Model):
     update = models.DateTimeField(auto_now=True)
     available = models.BooleanField(default=True, null=True, blank=True)
     status = models.CharField(max_length=10, null=True, blank=True, choices=VARIANT)
+    color = models.ManyToManyField('Color', blank=True)
+    size = models.ManyToManyField('Size', blank=True)
+    brand = models.ForeignKey('Brand', on_delete=models.CASCADE, blank=True, null=True)
     image = models.FileField(upload_to='product/%Y/%m/&d')
     tags = TaggableManager(blank=True)
     like = models.ManyToManyField(User, blank=True, related_name='product_like')
@@ -60,6 +63,8 @@ class Product(models.Model):
     unlike = models.ManyToManyField(User, blank=True, related_name='product_unlike')
     total_unlike = models.PositiveIntegerField(default=0)
     favourite = models.ManyToManyField(User, blank=True, related_name='fa_user')
+    total_favourite = models.IntegerField(default=0)
+    sell = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -131,6 +136,13 @@ class ImageProductGallery(models.Model):
     name = models.CharField(max_length=100, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='porduct_image')
     image = models.FileField(upload_to='product_image_gallery/%Y/%m/&d', blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Brand(models.Model):
+    name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name

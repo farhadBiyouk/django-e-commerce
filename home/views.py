@@ -6,6 +6,8 @@ from django.db.models import Q
 from cart.forms import CartForm
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from home.filters import ProductFilter
+from urllib.parse import urlencode
 
 
 def home(request):
@@ -15,27 +17,23 @@ def home(request):
 
 def all_product(request, slug=None):
     products = Product.objects.all()
-    pagination = Paginator(products, 1)
+    filter_item = ProductFilter(request.GET, queryset=products)
+    products = filter_item.qs
+    pagination = Paginator(products, 4)
     page_number = request.GET.get('page')
-    try:
-        page_obj = pagination.get_page(page_number)
-    except EmptyPage:
-        page_obj = pagination.get_page(page_number.num_pages)
-    except PageNotAnInteger:
-        page_obj = pagination.get_page(1)
+    data = request.GET.copy()
+    if 'page' in data:
+        del data['page']
+    page_obj = pagination.get_page(page_number)
     category = Category.objects.filter(is_sub=False)
     if slug:
         data = Category.objects.get(slug=slug)
-        products = products.filter(category=data)
-        pagination = Paginator(products, 1)
+        page_obj = products.filter(category=data)
+        pagination = Paginator(page_obj, 4)
         page_number = request.GET.get('page')
-        try:
-            page_obj = pagination.get_page(page_number)
-        except EmptyPage:
-            page_obj = pagination.get_page(page_number.num_pages)
-        except PageNotAnInteger:
-            page_obj = pagination.get_page(1)
-    return render(request, 'home/product.html', {'products': page_obj, 'category': category})
+        page_obj = pagination.get_page(page_number)
+    return render(request, 'home/product.html',
+                  {'products': page_obj, 'category': category, 'filter_item': filter_item, 'data': urlencode(data)})
 
 
 def product_detail(request, product_id):
@@ -154,10 +152,12 @@ def favourite_product(request, id):
     if product.favourite.filter(id=request.user.id).exists():
         product.favourite.remove(request.user)
         is_fav = False
+        product.total_favourite -= 1
         messages.error(request, 'deleted this product to your favourite list', 'danger')
     else:
         product.favourite.add(request.user)
         is_fav = True
+        product.total_favourite += 1
         messages.success(request, 'added this product to your favourite list')
     return redirect(url)
 

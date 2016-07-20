@@ -1,40 +1,108 @@
 {% extends 'base.html' %}
 {% block title %}Product{% endblock %}
 {% block content %}
-<h1>Product page</h1>
-<form action="{% url 'home:search_product' %}" method="post">
-    {% csrf_token %}
-    <input type="text" name="search" class="form-control" placeholder="search....">
-    <button type="submit" class=" btn btn-primary text-white w-25 m-2 p-1 align-center">Search</button>
-</form>
-<br>
-{% for product in products %}
-<h2>{{product.name}}</h2>
-<a href="{% url 'home:product_detail' product.id %}"><img src="{{product.image.url}}" alt="" srcset=""
-                                                          style="width: 150px"><br></a>
-{% if product.discount %}
-<strike>{{product.unit_price}}</strike>
-<h3>{{product.total_price}}</h3>
-{% else %}
-<h3>{{product.total_price}}</h3>
-{% endif %}
-{% endfor %}
-<nav aria-label="Page navigation example">
-    <ul class="pagination">
-         {% if products.has_previous %}
-        <li class="page-item"><a href="?page={{products.previous_page_number}}" class="page-link">Previous</a></li>
-        <li class="page-item"><a href="?page={{products.previous_page_number}}" class="page-link">{{products.previous_page_number}}</a></li>
-        {% endif %}
+<div class="container-fluid">
+    <form action="{% url 'home:search_product' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="search" class="form-control" placeholder="search....">
+        <button type="submit" class=" btn btn-primary text-white w-25 m-2 p-1 align-center">Search</button>
+    </form>
+    <br>
+    <div class="row mt-4">
+        <div class="col-3">
+            <form action="">
+                <label for="">Price
+                    <input type="range" name="price1" min="1" max="200000000" value="1">
+                    <input type="range" name="price2" min="1" max="2000000000" value="2000000000">
 
 
-        <li class="page-item active"><a href="?page={{products.number}}" class="page-link">{{products.number}}</a></li>
+                </label><br>
+                <label for="">Brand
+                    {{filter_item.form.brand}}
+                </label>
+                <br>
+                <label for="">Size
+                    {{filter_item.form.size}}
+                </label>
+                <br>
+                <label for="">Color
+                    {{filter_item.form.color}}
+                </label>
+                <br>
+
+                <div style="display: none">
+                    {{filter_item.form.price}}
+                    {{filter_item.form.create}}
+                    {{filter_item.form.discount}}
+                </div>
+                <br><br>
+                <button type="submit" class="btn btn-danger">filter</button>
+            </form>
+        </div>
+        <div class="col-9">
+            <div class="row">
+                <form action="">
+                    <input type="submit" value="گران ترین" name="price">
+                    <input type="submit" value="ارزان ترین" name="price">
+                    <input type="submit" value="جدید ترین" name="create">
+                    <input type="submit" value="قدیمی تر" name="create">
+                    <input type="submit" value="پر تخفیف" name="discount">
+                    <input type="submit" value="کم تخفیف" name="discount">
+                    <div style="display: none">
+                        {{filter_item.form.price1}}
+                        {{filter_item.form.price2}}
+                        {{filter_item.form.brand}}
+                        {{filter_item.form.size}}
+                        {{filter_item.form.color}}
+                    </div>
+                </form>
+            </div>
+            <br>
+            <div class="row">
+                {% for product in products %}
+                <div class="col-4">
+                    <h2>{{product.name}}</h2>
+                    <a href="{% url 'home:product_detail' product.id %}"><img src="{{product.image.url}}" alt=""
+                                                                              srcset=""
+                                                                              style="width: 150px"><br></a>
+                    {% if product.discount %}
+                    <strike>{{product.unit_price}}</strike>
+                    <h3>{{product.total_price}}</h3>
+                    {% else %}
+                    <h3>{{product.total_price}}</h3>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <br><br>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                    <li class="page-item"><a href="?page={{products.previous_page_number}}&{{data}}"
+                                             class="page-link">Previous</a></li>
+                    <li class="page-item"><a href="?page={{products.previous_page_number}}&{{data}}" class="page-link">{{products.previous_page_number}}</a>
+                    </li>
+                    {% endif %}
 
 
-        {% if products.has_next %}
-        <li class="page-item"><a href="?page={{products.next_page_number}}" class="page-link">{{products.next_page_number}}</a></li>
-        <li class="page-item"><a href="?page={{products.next_page_number}}" class="page-link">Next</a></li>
+                    <li class="page-item active"><a href="?page={{products.number}}&{{data}}" class="page-link">{{products.number}}</a>
+                    </li>
 
-        {% endif %}
-    </ul>
-</nav>
+
+                    {% if products.has_next %}
+                    <li class="page-item"><a href="?page={{products.next_page_number}}&{{data}}" class="page-link">{{products.next_page_number}}</a>
+                    </li>
+                    <li class="page-item"><a href="?page={{products.next_page_number}}&{{data}}"
+                                             class="page-link">Next</a></li>
+
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+</div>
 {% endblock %}
