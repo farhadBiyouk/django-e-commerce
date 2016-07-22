@@ -8,6 +8,7 @@ from home.models import (
     Comment,
     ImageProductGallery,
     Brand,
+    Chart,
 )
 from django.utils.html import format_html
 
@@ -48,3 +49,4 @@ class CommentAdmin(admin.ModelAdmin):
 admin.site.register(Size)
 admin.site.register(Color)
 admin.site.register(Brand)
+admin.site.register(Chart)

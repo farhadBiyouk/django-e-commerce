@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from cart.forms import CartForm
 from .models import Cart
-from home.models import Product
+from home.models import Product, Variant
 from django.contrib import messages
 from order.forms import OrderForm
 
@@ -60,4 +60,29 @@ def add_cart(request, id):
 def remove_cart(request, id):
     Cart.objects.get(id=id).delete()
     messages.success(request, 'deleted  product from cart successfully')
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def add_single(request, id):
+    cart = Cart.objects.get(id=id)
+    if cart.product.status == 'None':
+        product = Product.objects.get(id=cart.product.id)
+        if product.amount > cart.quantity:
+            cart.quantity += 1
+
+    else:
+        variant = Variant.objects.get(id=cart.variant.id)
+        if variant.amount > cart.quantity:
+            cart.quantity += 1
+    cart.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def remove_single(request, id):
+    cart = Cart.objects.get(id=id)
+    if cart.quantity < 2:
+        cart.delete()
+    else:
+        cart.quantity -= 1
+    cart.save()
     return redirect(request.META.get('HTTP_REFERER'))

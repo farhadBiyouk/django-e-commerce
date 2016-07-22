@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.html import format_html
 from taggit.managers import TaggableManager
 from django.db.models import Avg
+from django.db.models.signals import post_save
 
 
 class Category(models.Model):
@@ -118,6 +119,7 @@ class Variant(models.Model):
     unit_price = models.PositiveIntegerField()
     discount = models.PositiveIntegerField(blank=True, null=True)
     total_price = models.PositiveIntegerField()
+    update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -146,3 +148,34 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Chart(models.Model):
+    name = models.CharField(max_length=50, null=True, blank=True)
+    unit_price = models.IntegerField(default=0)
+    update = models.DateTimeField(auto_now=True)
+    color = models.CharField(max_length=50, null=True, blank=True)
+    size = models.CharField(max_length=50, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True, related_name='pr_update')
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, blank=True, null=True, related_name='v_update')
+
+    def __str__(self):
+        return self.name
+
+
+def product_post_saved(sender, instance, created, *args, **kwargs):
+    data = instance
+    Chart.objects.create(product=data, unit_price=data.unit_price, update=data.update, name=data.name)
+
+
+post_save.connect(product_post_saved, sender=Product)
+
+
+def variant_post_saved(sender, instance, created, *args, **kwargs):
+    data = instance
+    Chart.objects.create(variant=data, unit_price=data.unit_price,
+                         update=data.update, name=data.name,
+                         size=data.size_variant, color=data.color_variant)
+
+
+post_save.connect(variant_post_saved, sender=Variant)
