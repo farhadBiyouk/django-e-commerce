@@ -72,6 +72,12 @@
                     <h3>{{product.total_price}}</h3>
                     {% endif %}
                 </div>
+                <br>
+                <form action="{%  url 'cart:compare' product.id %}">
+                    <input type="hidden" name="product">
+                    <br>
+                    <button type="submit" class="btn btn-outline-dark">add</button>
+                </form>
                 {% endfor %}
 
             </div>

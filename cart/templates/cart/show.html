@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Compare products{% endblock %}
+{% block  content %}
+<h1>Compare page</h1>
+
+{% for item in data %}
+<p>{{item.product.name}}</p>
+{% endfor %}
+
+{% endblock %}

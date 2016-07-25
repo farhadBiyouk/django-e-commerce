@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from cart.forms import CartForm
-from .models import Cart
+from .models import Cart, Compare
 from home.models import Product, Variant
 from django.contrib import messages
 from order.forms import OrderForm
@@ -86,3 +86,40 @@ def remove_single(request, id):
         cart.quantity -= 1
     cart.save()
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+def compare(request, id):
+    if request.user.is_authenticated:
+        item = get_object_or_404(Product, id=id)  # refer to product will add to compare list
+        qs = Compare.objects.filter(user_id=request.user.id, product_id=item.id, session_key=None)
+        if qs.exists():
+            messages.success(request, 'ok user')
+        else:
+            Compare.objects.create(
+                user_id=request.user.id,
+                product_id=item.id,
+                session_key=None
+            )
+    else:
+        item = get_object_or_404(Product, id=id)  # refer to product will add to compare list
+        qs = Compare.objects.filter(user_id=None, product_id=item.id, session_key__exact=request.session.session_key)
+        if qs.exists():
+            messages.success(request, 'ok session')
+        else:
+            if not request.session.session_key:
+                request.session.create()
+            Compare.objects.create(
+                user_id=None,
+                product_id=item.id,
+                session_key=request.session.session_key
+            )
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def show(request):
+    if request.user.is_authenticated:
+        data = Compare.objects.filter(user_id=request.user.id)
+        return render(request, 'cart/show.html', {'data': data})
+    else:
+        data = Compare.objects.filter(session_key__exact=request.session.session_key)
+        return render(request, 'cart/show.html', {'data': data})
