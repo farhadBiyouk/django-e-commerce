@@ -21,9 +21,6 @@ def all_product(request, slug=None):
     products = filter_item.qs
     pagination = Paginator(products, 4)
     page_number = request.GET.get('page')
-    data = request.GET.copy()
-    if 'page' in data:
-        del data['page']
     page_obj = pagination.get_page(page_number)
     category = Category.objects.filter(is_sub=False)
     if slug:
@@ -33,7 +30,7 @@ def all_product(request, slug=None):
         page_number = request.GET.get('page')
         page_obj = pagination.get_page(page_number)
     return render(request, 'home/product.html',
-                  {'products': page_obj, 'category': category, 'filter_item': filter_item, 'data': urlencode(data)})
+                  {'products': page_obj, 'category': category, 'filter_item': filter_item})
 
 
 def product_detail(request, product_id):
