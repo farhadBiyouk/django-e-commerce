@@ -66,6 +66,8 @@ class Product(models.Model):
     favourite = models.ManyToManyField(User, blank=True, related_name='fa_user')
     total_favourite = models.IntegerField(default=0)
     sell = models.IntegerField(default=0)
+    view = models.ManyToManyField(User, blank=True, related_name='product_view')
+    num_view = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

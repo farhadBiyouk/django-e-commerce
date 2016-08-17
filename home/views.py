@@ -38,6 +38,10 @@ def all_product(request, slug=None):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+    product.num_view += 1
+    product.save()
+    if request.user.is_authenticated:
+        product.view.add(request.user)
     comment_form = CommentProductForm()
     reply_comment = ReplyCommentProductForm()
     comments = Comment.objects.filter(product_id=product_id, is_reply=False)
