@@ -81,6 +81,9 @@ class Product(models.Model):
             return int(self.unit_price - total)
         return self.total_price
 
+    def get_absolute_url(self):
+        return reverse('home:product_detail', args=[self.id])
+
     def total_like(self):
         return self.like.count()
 
