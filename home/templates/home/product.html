@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load home_test %}
+{% load upper_case_filter %}
 {% block title %}Product{% endblock %}
 {% block content %}
 <div class="container-fluid">
@@ -62,7 +63,7 @@
             <div class="row">
                 {% for product in products %}
                 <div class="col-4">
-                    <h2>{{product.name}}</h2>
+                    <h2>{{product.name | convert_to_upper_case }}</h2>
                     <a href="{% url 'home:product_detail' product.id %}"><img src="{{product.image.url}}" alt=""
                                                                               srcset=""
                                                                               style="width: 150px"><br></a>
@@ -89,19 +90,26 @@
                     {% if products.has_previous %}
                     <li class="page-item"><a href="?page={{products.previous_page_number}}&{{data}}"
                                              class="page-link">Previous</a></li>
-                    <li class="page-item"><a href="{% filter_url products.previous_page_number 'page' request.GET.urlencode %}" class="page-link">{{products.previous_page_number}}</a>
+                    <li class="page-item"><a
+                            href="{% filter_url products.previous_page_number 'page' request.GET.urlencode %}"
+                            class="page-link">{{products.previous_page_number}}</a>
                     </li>
                     {% endif %}
 
 
-                    <li class="page-item active"><a href="{% filter_url pproducts.number 'page' request.GET.urlencode %}" class="page-link">{{products.number}}</a>
+                    <li class="page-item active"><a
+                            href="{% filter_url pproducts.number 'page' request.GET.urlencode %}" class="page-link">{{products.number}}</a>
                     </li>
 
 
                     {% if products.has_next %}
-                    <li class="page-item"><a href="{% filter_url products.next_page_number 'page' request.GET.urlencode %}" class="page-link">{{products.next_page_number}}</a>
+                    <li class="page-item"><a
+                            href="{% filter_url products.next_page_number 'page' request.GET.urlencode %}"
+                            class="page-link">{{products.next_page_number}}</a>
                     </li>
-                    <li class="page-item"><a href="{% filter_url products.next_page_numberr 'page' request.GET.urlencode %}" class="page-link">Next</a></li>
+                    <li class="page-item"><a
+                            href="{% filter_url products.next_page_numberr 'page' request.GET.urlencode %}"
+                            class="page-link">Next</a></li>
 
                     {% endif %}
                 </ul>
