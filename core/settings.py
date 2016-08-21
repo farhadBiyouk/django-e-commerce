@@ -147,3 +147,19 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_PORT = ''
 # EMAIL_USE_LTS = True
 # EMAIL_USE_SSL = True
+
+# refer to mitm
+CSFR_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# refer to  xss or js injection
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# redirect to https
+SECURE_SSL_REDIRECT = True
+
+# refer to secure transport layer
+SECURE_HSTS_SECOND = 86400
+SECURE_HSTS_INCLUDE_SUBDOMAIN = True
+SECURE_HSTS_PRELOAD = True
